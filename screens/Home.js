@@ -12,7 +12,8 @@ import RestaurantItems, {
 import BottomTabs from "../components/home/BottomTabs.js";
 
 
-const Home = () => {
+const Home = (navigation) => {
+
   const [restaurantData, setRestaurantData] = useState(localRestaurants);
   const [city, setCity] = useState("Tulsa");
   const [activeTab, setActiveTab] = useState("Delivery");
@@ -26,7 +27,7 @@ const Home = () => {
       },
     };
     console.log(city);
-    fetch(`http://localhost:3001/api/yelp?term=restaurants&location=${city}`, options)
+    fetch(`https://hungry-leather-jacket-bee.cyclic.app/api/yelp?term=restaurants&location=${city}`, options)
 
 
       .then((res) => res.json())
@@ -53,7 +54,7 @@ const Home = () => {
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Categories />
-        <RestaurantItems restaurantData={restaurantData} />
+        <RestaurantItems restaurantData={restaurantData} navigation={navigation}/>
       </ScrollView>
       <Divider width={1} />
       <BottomTabs/>

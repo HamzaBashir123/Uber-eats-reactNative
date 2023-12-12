@@ -25,9 +25,8 @@ export default function MenuItems({
   marginLeft,
 }) {
   const dispatch = useDispatch();
-
   const selectItem = (item, checkboxValue) =>
-    dispatch({
+  dispatch({
       type: "ADD_TO_CART",
       payload: {
         ...item,
@@ -36,12 +35,12 @@ export default function MenuItems({
       },
     });
 
-  const cartItems = useSelector(
-    (state) => state.cartReducer.selectedItems.items
-  );
+  // const cartItems = useSelector(
+  //   (state) => state.cartReducer.selectedItems.items
+  // );
 
-  const isFoodInCart = (food, cartItems) =>
-    Boolean(cartItems.find((item) => item.title === food.title));
+  // const isFoodInCart = (food) =>
+  //   Boolean(cartItems.find((item) => item.title === food.title));
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -54,8 +53,7 @@ export default function MenuItems({
               <BouncyCheckbox
                 iconStyle={{ borderColor: "lightgray", borderRadius: 0 }}
                 fillColor="green"
-                isChecked={isFoodInCart(food, cartItems)}
-                onPress={(checkboxValue) => selectItem(food, checkboxValue)}
+                onPress={(checkboxValue) => selectItem(food)}
               />
             )}
             <FoodInfo food={food} />
