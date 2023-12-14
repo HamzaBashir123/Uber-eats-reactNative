@@ -5,6 +5,7 @@ import About from "../components/restaurantDetail/About";
 import MenuItems from "../components/restaurantDetail/MenuItems";
 import ViewCart from "../components/restaurantDetail/ViewCart";
 
+
 const foods = [
   {
     title: "Lasagna",

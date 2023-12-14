@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-// import LottieView from "lottie-react-native";
+import LottieView from "lottie-react-native";
 import OrderItem from "./OrderItem";
 
 import {
@@ -18,7 +18,7 @@ import {
   addDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import { getAuth } from 'firebase/auth'; // If you are using authentication
+import { getAuth } from "firebase/auth"; // If you are using authentication
 import app from "../../firebase";
 
 const windowWidth = Dimensions.get("window").width;
@@ -214,17 +214,16 @@ export default function ViewCart({ navigation }) {
       )}
       {loading ? (
         <View style={styles.loadingOverlay}>
-          {/* <LottieView
+          <LottieView
             style={styles.loadingAnimation}
             source={require("../../assets/animations/scanner.json")}
             autoPlay
             speed={3}
-          /> */}
+          />
         </View>
       ) : (
         <></>
       )}
-          
     </>
   );
 }

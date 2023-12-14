@@ -8,6 +8,7 @@ import LottieView  from "lottie-react-native";
 
 import { getFirestore, collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import app from "../firebase.js";
+import MenuItems from "../components/restaurantDetail/MenuItems.js";
 
 // Assuming `app` is your Firebase app instance, which you've already initialized
 
@@ -82,17 +83,19 @@ export default function OrderCompleted() {
 
                 {/* cooking animation*/}
                 <ScrollView>
-                    {/* <MenuItem
+                    <MenuItems
                         foods={lastOrder.items}
                         hideCheckbox={true}
                         marginLeft={10}
-                    /> */}
+                    />
                     <LottieView
                         style={{ height: 200, alignSelf: "center" }}
                         source={require("../assets/animations/cooking.json")}
                         autoPlay
                         speed={0.5}
+                        loop={true}
                     />
+                  
                 </ScrollView>
             </View>
         </SafeAreaView>

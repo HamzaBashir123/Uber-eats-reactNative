@@ -28,7 +28,7 @@ const Home = (navigation) => {
       },
     };
     console.log(city);
-    fetch(`https://hungry-leather-jacket-bee.cyclic.app/api/yelp?term=restaurants&location=${city}&sort_by=best_match&limit=10` , options)
+    fetch(`https://hungry-leather-jacket-bee.cyclic.app/api/yelp?term=restaurants&location=${city}` , options)
 
 
       .then((res) => res.json())
