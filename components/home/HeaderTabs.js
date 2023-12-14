@@ -26,7 +26,6 @@ const HeaderButton = (props) => (
   <TouchableOpacity
     style={{
       backgroundColor: props.activeTab === props.text ? 'black' : '#eee'  ,
-      
       paddingVertical: 6,
       paddingHorizontal: 16,
       borderRadius: 30,

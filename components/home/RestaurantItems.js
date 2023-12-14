@@ -61,7 +61,6 @@ export const localRestaurants = [
     rating: 4.9,
   },
 ];
-
 export default function RestaurantItems({ ...props }) {
      const navigation =  useNavigation()
   return (

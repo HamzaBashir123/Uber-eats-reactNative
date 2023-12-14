@@ -1,9 +1,28 @@
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
-import OrderItem from "./OrderItem";
-// import firebase from "../../firebase";
 // import LottieView from "lottie-react-native";
+import OrderItem from "./OrderItem";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { getAuth } from 'firebase/auth'; // If you are using authentication
+import app from "../../firebase";
+
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 export default function ViewCart({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -12,7 +31,6 @@ export default function ViewCart({ navigation }) {
   const { items, restaurantName } = useSelector(
     (state) => state.cartReducer.selectedItems
   );
-  console.log(items);
 
   const total = items
     .map((item) => Number(item.price.replace("$", "")))
@@ -22,112 +40,147 @@ export default function ViewCart({ navigation }) {
     style: "currency",
     currency: "USD",
   });
-  console.log(totalUSD);
 
-  // const addOrderToFireBase = () => {
-  //   setLoading(true);
-  //   const db = firebase.firestore();
-  //   db.collection("orders")
-  //     .add({
-  //       items: items,
-  //       restaurantName: restaurantName,
-  //       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-  //     })
-  //     .then(() => {
-  //       setTimeout(() => {
-  //         setLoading(false);
-  //         navigation.navigate("OrderCompleted");
-  //       }, 2500);
-  //     });
-  // };
+  const addOrderToFireBase = async () => {
+    setLoading(true);
+
+    try {
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+
+      await addDoc(collection(db, "orders"), {
+        items: items,
+        restaurantName: restaurantName,
+        createdAt: serverTimestamp(),
+      });
+      setModalVisible(false);
+
+      setTimeout(() => {
+        setLoading(false);
+        navigation.navigate("OrderCompleted");
+      }, 2500);
+    } catch (error) {
+      console.error("Error adding order to Firestore:", error);
+      setLoading(false);
+    }
+  };
 
   const styles = StyleSheet.create({
     modalContainer: {
       flex: 1,
       justifyContent: "flex-end",
-      alignItems: "center",
-      backgroundColor: "rgba(0,0,0,0.7)",
-      flexDirection : "row",
-      position: "absolute",
-      bottom: "90",
-      zIndex :  999,
+      backgroundColor: "rgba(0, 0, 0, 0.7)",
     },
-
     modalCheckoutContainer: {
       backgroundColor: "white",
-      padding: 16,
-      height: 500,
+      padding: windowWidth * 0.04,
+      height: windowHeight * 0.7,
       borderWidth: 1,
     },
-
     restaurantName: {
       textAlign: "center",
       fontWeight: "600",
-      fontSize: 18,
-      marginBottom: 10,
+      fontSize: windowWidth * 0.06,
+      marginBottom: windowHeight * 0.02,
     },
-
     subtotalContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginTop: 15,
+      marginTop: windowHeight * 0.03,
     },
-
     subtotalText: {
       textAlign: "left",
       fontWeight: "600",
-      fontSize: 15,
-      marginBottom: 10,
+      fontSize: windowWidth * 0.045,
+      marginBottom: windowHeight * 0.02,
+    },
+    checkoutButton: {
+      marginTop: windowHeight * 0.03,
+      backgroundColor: "black",
+      justifyContent: "center",
+      alignItems: "center",
+      paddingVertical: windowHeight * 0.02,
+      borderRadius: windowWidth * 0.1,
+      width: 300,
+      alignSelf: "center",
+      position: "relative",
+    },
+    checkoutButtonText: {
+      color: "white",
+      fontSize: windowWidth * 0.05,
+    },
+    checkoutButtonTotal: {
+      color: "white",
+      fontSize: windowWidth * 0.04,
+      position: "absolute",
+      right: 30,
+    },
+    viewCartButton: {
+      position: "fixed",
+      bottom: 0,
+      zIndex: 999,
+      backgroundColor: "black",
+      flexDirection: "row",
+      justifyContent: "center",
+      borderRadius: windowWidth * 0.1,
+      width: windowWidth * 0.6,
+      alignSelf: "center",
+      marginBottom: windowHeight * 0.06,
+    },
+    viewCartButtonText: {
+      color: "white",
+      fontSize: windowWidth * 0.05,
+      marginRight: windowWidth * 0.04,
+    },
+    viewCartButtonTotal: {
+      color: "white",
+      fontSize: windowWidth * 0.05,
+    },
+    loadingOverlay: {
+      backgroundColor: "black",
+      position: "absolute",
+      opacity: 0.6,
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100%",
+      width: "100%",
+    },
+    loadingAnimation: {
+      height: windowHeight * 0.2,
     },
   });
 
   const checkoutModalContent = () => {
     return (
       <>
-      {total ? (
         <View style={styles.modalContainer}>
-          <View style={styles.modalCheckoutContainer}>
-            <Text style={styles.restaurantName}>{restaurantName}</Text>
-            {items.map((item, index) => (
-              <OrderItem key={index} item={item} />
-            ))}
-            <View style={styles.subtotalContainer}>
-              <Text style={styles.subtotalText}>Subtotal</Text>
-              <Text>{totalUSD}</Text>
-            </View>
-            <View style={{ flexDirection: "row", justifyContent: "center", width : "100%"}}>
-              <TouchableOpacity
-                style={{
-                  marginTop: 20,
-                  backgroundColor: "black",
-                  alignItems: "center",
-                  padding: 13,
-                  borderRadius: 30,
-                  width: 300,
-                  position: "relative",
-                }}
-                onPress={() => {
-                  addOrderToFireBase();
-                  setModalVisible(false);
-                }}
-              >
-                <Text style={{ color: "white", fontSize: 20 }}>Checkout</Text>
-                <Text
-                  style={{
-                    position: "absolute",
-                    right: 20,
-                    color: "white",
-                    fontSize: 15,
-                    top: 17,
+          <ScrollView>
+            <View style={styles.modalCheckoutContainer}>
+              <Text style={styles.restaurantName}>{restaurantName}</Text>
+              {items.map((item, index) => (
+                <OrderItem key={index} item={item} />
+              ))}
+              <View style={styles.subtotalContainer}>
+                <Text style={styles.subtotalText}>Subtotal</Text>
+                <Text>{totalUSD}</Text>
+              </View>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                <TouchableOpacity
+                  style={styles.checkoutButton}
+                  onPress={() => {
+                    addOrderToFireBase();
+                    setModalVisible(false);
                   }}
                 >
-                  {total ? totalUSD : ""}
-                </Text>
-              </TouchableOpacity>
+                  <Text style={styles.checkoutButtonText}>Checkout</Text>
+                  <Text style={styles.checkoutButtonTotal}>
+                    {total ? totalUSD : ""}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </View> 
-       ) : (<></>) }
+          </ScrollView>
+        </View>
       </>
     );
   };
@@ -142,62 +195,27 @@ export default function ViewCart({ navigation }) {
       >
         {checkoutModalContent()}
       </Modal>
-      {"" ? (
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "row",
-            position: "absolute",
-            bottom: 130,
-            zIndex: 999,
-          }}
-        >
-          <View
+      {total ? (
+        <View style={styles.viewCartButton}>
+          <TouchableOpacity
             style={{
               flexDirection: "row",
-              justifyContent: "center",
-              width: "100%",
+              justifyContent: "flex-end",
+              padding: windowHeight * 0.02,
             }}
+            onPress={() => setModalVisible(true)}
           >
-            <TouchableOpacity
-              style={{
-                marginTop: 20,
-                backgroundColor: "black",
-                flexDirection: "row",
-                justifyContent: "flex-end",
-                padding: 15,
-                borderRadius: 30,
-                width: 300,
-                position: "relative",
-              }}
-              onPress={() => setModalVisible(true)}
-            >
-              <Text style={{ color: "white", fontSize: 20, marginRight: 30 }}>
-                View Cart
-              </Text>
-              <Text style={{ color: "white", fontSize: 20 }}>{totalUSD}</Text>
-            </TouchableOpacity>
-          </View>
+            <Text style={styles.viewCartButtonText}>View Cart</Text>
+            <Text style={styles.viewCartButtonTotal}>{totalUSD}</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <></>
       )}
       {loading ? (
-        <View
-          style={{
-            backgroundColor: "black",
-            position: "absolute",
-            opacity: 0.6,
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            width: "100%",
-          }}
-        >
+        <View style={styles.loadingOverlay}>
           {/* <LottieView
-            style={{ height: 200 }}
+            style={styles.loadingAnimation}
             source={require("../../assets/animations/scanner.json")}
             autoPlay
             speed={3}
@@ -206,6 +224,7 @@ export default function ViewCart({ navigation }) {
       ) : (
         <></>
       )}
+          
     </>
   );
 }

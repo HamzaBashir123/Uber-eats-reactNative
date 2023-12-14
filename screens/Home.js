@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, SafeAreaView } from "react-native";
 import HeaderTabs from "../components/home/HeaderTabs.js";
 import SearchBar from "../components/home/SearchBar.js";
 import Categories from "../components/home/Categories.js";
@@ -16,6 +16,7 @@ const Home = (navigation) => {
 
   const [restaurantData, setRestaurantData] = useState(localRestaurants);
   const [city, setCity] = useState("Tulsa");
+  console.log(restaurantData, "===<<")
   const [activeTab, setActiveTab] = useState("Delivery");
   
 
@@ -27,7 +28,7 @@ const Home = (navigation) => {
       },
     };
     console.log(city);
-    fetch(`https://hungry-leather-jacket-bee.cyclic.app/api/yelp?term=restaurants&location=${city}`, options)
+    fetch(`https://hungry-leather-jacket-bee.cyclic.app/api/yelp?term=restaurants&location=${city}&sort_by=best_match&limit=10` , options)
 
 
       .then((res) => res.json())
@@ -41,6 +42,7 @@ const Home = (navigation) => {
       .catch(err => console.log(err));
   }, [city, activeTab])
   return (
+    <SafeAreaView style={{ backgroundColor: '#eee', flex: 1 }}>
     <View style={{ backgroundColor: '#eee', flex: 1 }}>
       <View
         style={{
@@ -59,6 +61,7 @@ const Home = (navigation) => {
       <Divider width={1} />
       <BottomTabs/>
     </View>
+    </SafeAreaView>
   );
 };
 

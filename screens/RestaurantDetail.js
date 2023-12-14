@@ -46,14 +46,14 @@ const foods = [
 ];
 
 export default function RestaurantDetail({ route, navigation }) {
-  console.log(route , navigation,'====================================  RestaurantDetail');
+  console.log(route , navigation,'===> RestaurantDetail');
  
   return (
     <View>
       <About route={route} />
       <Divider width={1.8} style={{ marginVertical: 20 }} />
       <MenuItems restaurantName={route.params.name} foods={foods} />
-      <ViewCart navigation={navigation}  restaurantName={route.params.name}  />
+      <ViewCart navigation={navigation}/>
     </View>
   );
 }
